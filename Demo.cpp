@@ -10,7 +10,7 @@ using namespace std;
 
 int main()
 {
-
+// stam
     Node<double> root_node = Node(1.1);
     Tree<double> tree; // Binary tree that contains doubles.
     tree.add_root(root_node);

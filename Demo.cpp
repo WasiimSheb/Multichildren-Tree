@@ -5,6 +5,7 @@
 #include "tree.hpp"
 
 using namespace std;
+using namespace sf;
 
 const float NODE_RADIUS = 20.0f;
 const float HORIZONTAL_SPACING = 100.0f;

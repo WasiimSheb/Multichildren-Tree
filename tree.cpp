@@ -229,6 +229,8 @@ std::ostream& operator<<(std::ostream& os, const Tree<T, k>& tree) {
 }
 
 // Explicit template instantiation
+template class Tree<double, 2>;
 template class Tree<double, 3>;
 
+template std::ostream& operator<< <double>(std::ostream& os, const Tree<double, 2>& tree);
 template std::ostream& operator<< <double>(std::ostream& os, const Tree<double, 3>& tree);

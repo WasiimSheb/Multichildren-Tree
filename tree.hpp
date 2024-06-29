@@ -9,127 +9,98 @@
 template <typename T, int k = 2>
 class Tree {
 private:
-    std::shared_ptr<Node<T>> root;
+    Node<T>* root;
 
 public:
-    Tree() : root(nullptr) {}
+    Tree();
 
-    void add_root(Node<T>& root_node) {
-        root = std::make_shared<Node<T>>(root_node);
-    }
+    void add_root(Node<T>& root_node);
+    void add_sub_node(Node<T>& parent_node, Node<T>& sub_node);
 
-    void add_sub_node(Node<T>& parent_node, Node<T>& sub_node) {
-        std::shared_ptr<Node<T>> parent = find_node(root, parent_node);
-        if (parent && parent->children.size() < k) {
-            parent->add_child(std::make_shared<Node<T>>(sub_node));
-        }
-    }
-
-    // Find a node in the tree (recursive)
-    std::shared_ptr<Node<T>> find_node(std::shared_ptr<Node<T>> current, Node<T>& target) {
-        if (!current) return nullptr;
-        if (current->value == target.value) return current;
-
-        for (auto& child : current->children) {
-            auto found = find_node(child, target);
-            if (found) return found;
-        }
-
-        return nullptr;
-    }
-
-    // Pre-order traversal
     class PreOrderIterator {
     public:
-        PreOrderIterator(std::shared_ptr<Node<T>> root) {
-            if (root) stack.push(root);
-        }
+        PreOrderIterator(Node<T>* root);
 
-        bool operator!=(const PreOrderIterator& other) const {
-            return !stack.empty();
-        }
+        bool operator!=(const PreOrderIterator& other) const;
 
-        PreOrderIterator& operator++() {
-            auto node = stack.top();
-            stack.pop();
-            for (auto it = node->children.rbegin(); it != node->children.rend(); ++it) {
-                stack.push(*it);
-            }
-            return *this;
-        }
-
-        std::shared_ptr<Node<T>> operator*() const {
-            return stack.top();
-        }
+        PreOrderIterator& operator++();
+        Node<T>* operator*() const;
+        Node<T>* operator->() const;
 
     private:
-        std::stack<std::shared_ptr<Node<T>>> stack;
+        std::stack<Node<T>*> stack;
     };
 
-    PreOrderIterator begin_pre_order() const {
-        return PreOrderIterator(root);
-    }
+    PreOrderIterator begin_pre_order() const;
+    PreOrderIterator end_pre_order() const;
 
-    PreOrderIterator end_pre_order() const {
-        return PreOrderIterator(nullptr);
-    }
+    class PostOrderIterator {
+    public:
+        PostOrderIterator(Node<T>* root);
 
-    // Implement other iterators (PostOrder, InOrder, BFS) similarly...
+        bool operator!=(const PostOrderIterator& other) const;
 
-    // BFS traversal
+        PostOrderIterator& operator++();
+        Node<T>* operator*() const;
+        Node<T>* operator->() const;
+
+    private:
+        std::stack<Node<T>*> stack;
+        std::stack<Node<T>*> output;
+    };
+
+    PostOrderIterator begin_post_order() const;
+    PostOrderIterator end_post_order() const;
+
+    class InOrderIterator {
+    public:
+        InOrderIterator(Node<T>* root);
+
+        bool operator!=(const InOrderIterator& other) const;
+
+        InOrderIterator& operator++();
+        Node<T>* operator*() const;
+        Node<T>* operator->() const;
+
+    private:
+        std::stack<Node<T>*> stack;
+        void push_left(Node<T>* node);
+    };
+
+    InOrderIterator begin_in_order() const;
+    InOrderIterator end_in_order() const;
+
     class BFSIterator {
     public:
-        BFSIterator(std::shared_ptr<Node<T>> root) {
-            if (root) queue.push(root);
-        }
+        BFSIterator(Node<T>* root);
 
-        bool operator!=(const BFSIterator& other) const {
-            return !queue.empty();
-        }
+        bool operator!=(const BFSIterator& other) const;
 
-        BFSIterator& operator++() {
-            auto node = queue.front();
-            queue.pop();
-            for (auto& child : node->children) {
-                queue.push(child);
-            }
-            return *this;
-        }
-
-        std::shared_ptr<Node<T>> operator*() const {
-            return queue.front();
-        }
+        BFSIterator& operator++();
+        Node<T>* operator*() const;
+        Node<T>* operator->() const;
 
     private:
-        std::queue<std::shared_ptr<Node<T>>> queue;
+        std::queue<Node<T>*> queue;
     };
 
-    BFSIterator begin_bfs_scan() const {
-        return BFSIterator(root);
+    BFSIterator begin_bfs_scan() const;
+    BFSIterator end_bfs_scan() const;
+
+    BFSIterator begin() const {
+        return begin_bfs_scan();
     }
 
-    BFSIterator end_bfs_scan() const {
-        return BFSIterator(nullptr);
+    BFSIterator end() const {
+        return end_bfs_scan();
     }
 
-    // Overload the output stream operator
-    friend std::ostream& operator<<(std::ostream& os, const Tree& tree) {
-        if (tree.root) {
-            tree.print_node(os, tree.root, 0);
-        }
-        return os;
-    }
+    template <typename U, int m>
+    friend std::ostream& operator<<(std::ostream& os, const Tree<U, m>& tree);
 
 private:
-    void print_node(std::ostream& os, std::shared_ptr<Node<T>> node, int depth) const {
-        for (int i = 0; i < depth; ++i) {
-            os << "  ";
-        }
-        os << node->value << "\n";
-        for (auto& child : node->children) {
-            print_node(os, child, depth + 1);
-        }
-    }
+    void print_node(std::ostream& os, Node<T>* node, int depth) const;
+    Node<T>* find_node(Node<T>* current, Node<T>& target);
 };
 
 #endif // TREE_HPP

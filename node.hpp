@@ -2,23 +2,18 @@
 #define NODE_HPP
 
 #include <vector>
-#include <memory>
 
 template <typename T>
 class Node {
 public:
     T value;
-    std::vector<std::shared_ptr<Node<T>>> children;
+    std::vector<Node<T>*> children;
 
-    Node(T val) : value(val) {}
+    Node(T val);
 
-    T get_value() const {
-        return value;
-    }
+    T get_value() const;
 
-    void add_child(std::shared_ptr<Node<T>> child) {
-        children.push_back(child);
-    }
+    void add_child(Node<T>* child);
 };
 
 #endif // NODE_HPP

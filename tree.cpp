@@ -50,8 +50,8 @@ typename Tree<T, k>::PreOrderIterator& Tree<T, k>::PreOrderIterator::operator++(
 }
 
 template <typename T, int k>
-Node<T>* Tree<T, k>::PreOrderIterator::operator*() const {
-    return stack.top();
+Node<T>& Tree<T, k>::PreOrderIterator::operator*() const {
+    return *stack.top();
 }
 
 template <typename T, int k>
@@ -96,8 +96,8 @@ typename Tree<T, k>::PostOrderIterator& Tree<T, k>::PostOrderIterator::operator+
 }
 
 template <typename T, int k>
-Node<T>* Tree<T, k>::PostOrderIterator::operator*() const {
-    return output.top();
+Node<T>& Tree<T, k>::PostOrderIterator::operator*() const {
+    return *output.top();
 }
 
 template <typename T, int k>
@@ -150,8 +150,8 @@ typename Tree<T, k>::InOrderIterator& Tree<T, k>::InOrderIterator::operator++() 
 }
 
 template <typename T, int k>
-Node<T>* Tree<T, k>::InOrderIterator::operator*() const {
-    return stack.top();
+Node<T>& Tree<T, k>::InOrderIterator::operator*() const {
+    return *stack.top();
 }
 
 template <typename T, int k>
@@ -190,8 +190,8 @@ typename Tree<T, k>::BFSIterator& Tree<T, k>::BFSIterator::operator++() {
 }
 
 template <typename T, int k>
-Node<T>* Tree<T, k>::BFSIterator::operator*() const {
-    return queue.front();
+Node<T>& Tree<T, k>::BFSIterator::operator*() const {
+    return *queue.front();
 }
 
 template <typename T, int k>

@@ -24,7 +24,7 @@ public:
         bool operator!=(const PreOrderIterator& other) const;
 
         PreOrderIterator& operator++();
-        Node<T>* operator*() const;
+        Node<T>& operator*() const;
         Node<T>* operator->() const;
 
     private:
@@ -41,7 +41,7 @@ public:
         bool operator!=(const PostOrderIterator& other) const;
 
         PostOrderIterator& operator++();
-        Node<T>* operator*() const;
+        Node<T>& operator*() const;
         Node<T>* operator->() const;
 
     private:
@@ -59,7 +59,7 @@ public:
         bool operator!=(const InOrderIterator& other) const;
 
         InOrderIterator& operator++();
-        Node<T>* operator*() const;
+        Node<T>& operator*() const;
         Node<T>* operator->() const;
 
     private:
@@ -77,7 +77,7 @@ public:
         bool operator!=(const BFSIterator& other) const;
 
         BFSIterator& operator++();
-        Node<T>* operator*() const;
+        Node<T>& operator*() const;
         Node<T>* operator->() const;
 
     private:

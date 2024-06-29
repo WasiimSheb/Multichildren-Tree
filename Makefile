@@ -13,6 +13,9 @@ TARGET = tree_example
 # Define the source files
 SRCS = Demo.cpp node.cpp tree.cpp
 
+# Define the header files
+HDRS = node.hpp tree.hpp complex.hpp
+
 # Define the object files
 OBJS = $(SRCS:.cpp=.o)
 
@@ -24,7 +27,7 @@ $(TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
 # Rule to build object files
-%.o: %.cpp
+%.o: %.cpp $(HDRS)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Clean up the generated files

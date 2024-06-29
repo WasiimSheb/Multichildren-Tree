@@ -2,18 +2,18 @@
 #define NODE_HPP
 
 #include <vector>
+#include <iostream>
 
 template <typename T>
 class Node {
 public:
+    Node(T value) : value(value) {}
+
+    T get_value() const { return value; }
+    std::vector<Node*> children;
+
+private:
     T value;
-    std::vector<Node<T>*> children;
-
-    Node(T val);
-
-    T get_value() const;
-
-    void add_child(Node<T>* child);
 };
 
-#endif // NODE_HPP
+#endif

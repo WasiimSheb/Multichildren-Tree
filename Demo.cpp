@@ -82,19 +82,19 @@ int main() {
         std::cout << heap_iterator->toString() << " ";
         ++heap_iterator;
     }
-    std::cout << std::endl;
+    cout << endl;
 
     // Complex Tree Example
-    auto c_root = std::make_shared<Node<Complex>>(Complex(3, 4));
-    auto c_child1 = std::make_shared<Node<Complex>>(Complex(1, 2));
-    auto c_child2 = std::make_shared<Node<Complex>>(Complex(5, 6));
-    auto c_child3 = std::make_shared<Node<Complex>>(Complex(2, 3));
+    auto c_root = make_shared<Node<Complex>>(Complex(3, 4));
+    auto c_child1 = make_shared<Node<Complex>>(Complex(1, 2));
+    auto c_child2 = make_shared<Node<Complex>>(Complex(5, 6));
+    auto c_child3 = make_shared<Node<Complex>>(Complex(2, 3));
 
-    Tree<Complex, 2> complexTree;
+    Tree<Complex> complexTree;
     complexTree.add_root(*c_root);
     complexTree.add_sub_node(*c_root, *c_child1);
     complexTree.add_sub_node(*c_root, *c_child2);
-    complexTree.add_sub_node(*c_child1, *c_child3);
+    // complexTree.add_sub_node(*c_child1, *c_child3);
 
     auto c_heap_iterator = complexTree.begin_heap();
 
@@ -105,7 +105,7 @@ int main() {
     std::cout << std::endl;
 
     // SFML Window for Visualization
-    sf::RenderWindow window(sf::VideoMode(800, 600), "Tree Visualization");
+    sf::RenderWindow window(sf::VideoMode(1000, 600), "Tree Visualization");
 
     while (window.isOpen()) {
         sf::Event event;
@@ -115,7 +115,7 @@ int main() {
         }
 
         window.clear(sf::Color::White);
-        //drawTree(window, binaryTree.get_root(), window.getSize().x / 2, 50);
+       // drawTree(window, binaryTree.get_root(), window.getSize().x / 2, 50);
         drawTree(window, complexTree.get_root(), window.getSize().x / 2, 300);
         window.display();
     }

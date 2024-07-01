@@ -10,6 +10,8 @@
 #include <memory>
 #include <iostream>
 
+using namespace std;
+
 template <typename T, int K = 2>
 class Tree {
 private:
@@ -131,12 +133,12 @@ public:
             throw std::runtime_error("Root node not found. Please add a root node before adding sub-nodes.");
         }
 
-        std::queue<std::shared_ptr<Node<T>>> q;
+        queue<shared_ptr<Node<T>>> q;
         q.push(root);
-        std::shared_ptr<Node<T>> parent_ptr = nullptr;
+        shared_ptr<Node<T>> parent_ptr = nullptr;
 
         while (!q.empty()) {
-            std::shared_ptr<Node<T>> node = q.front();
+            shared_ptr<Node<T>> node = q.front();
             q.pop();
 
             if (node->get_key() == parent.get_key()) {
@@ -150,15 +152,15 @@ public:
         }
 
         if (parent_ptr == nullptr) {
-            throw std::runtime_error("Parent node not found. Cannot add the child node.");
+            throw runtime_error("Parent node not found. Cannot add the child node.");
         }
 
         if (parent_ptr->children.size() >= static_cast<size_t>(k)) {
-            throw std::runtime_error("Parent node has reached the maximum number of children.");
+            throw runtime_error("Parent node has reached the maximum number of children.");
         }
 
-        parent_ptr->add_child(std::make_shared<Node<T>>(child));
-        std::cout << "Added child node: " << child.get_key() << " to parent node: " << parent.get_key() << std::endl;
+        parent_ptr->add_child(make_shared<Node<T>>(child));
+        cout << "Added child node: " << child.get_key() << " to parent node: " << parent.get_key() << endl;
     }
 
     class iterator {

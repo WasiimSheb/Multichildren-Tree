@@ -4,6 +4,8 @@
 #include "node.hpp"
 #include <queue>
 #include <stack>
+#include <vector>
+#include <algorithm>
 #include <iostream>
 
 template <typename T, int k = 2>
@@ -37,17 +39,56 @@ public:
         return nullptr;
     }
 
-    class PreOrderIterator {
+    class BFSIterator {
     public:
-        PreOrderIterator(Node<T>* root) {
+        BFSIterator(Node<T>* root) {
+            if (root) queue.push(root);
+        }
+
+        bool operator!=(const BFSIterator& other) const {
+            return !queue.empty();
+        }
+
+        BFSIterator& operator++() {
+            auto node = queue.front();
+            queue.pop();
+            for (auto& child : node->children) {
+                queue.push(child);
+            }
+            return *this;
+        }
+
+        Node<T>& operator*() const {
+            return *queue.front();
+        }
+
+        Node<T>* operator->() const {
+            return queue.front();
+        }
+
+    private:
+        std::queue<Node<T>*> queue;
+    };
+
+    BFSIterator begin_bfs() const {
+        return BFSIterator(root);
+    }
+
+    BFSIterator end_bfs() const {
+        return BFSIterator(nullptr);
+    }
+
+    class DFSIterator {
+    public:
+        DFSIterator(Node<T>* root) {
             if (root) stack.push(root);
         }
 
-        bool operator!=(const PreOrderIterator& other) const {
+        bool operator!=(const DFSIterator& other) const {
             return !stack.empty();
         }
 
-        PreOrderIterator& operator++() {
+        DFSIterator& operator++() {
             auto node = stack.top();
             stack.pop();
             for (auto it = node->children.rbegin(); it != node->children.rend(); ++it) {
@@ -68,12 +109,62 @@ public:
         std::stack<Node<T>*> stack;
     };
 
-    PreOrderIterator begin_pre_order() const {
-        return PreOrderIterator(root);
+    DFSIterator begin_dfs() const {
+        return DFSIterator(root);
     }
 
-    PreOrderIterator end_pre_order() const {
-        return PreOrderIterator(nullptr);
+    DFSIterator end_dfs() const {
+        return DFSIterator(nullptr);
+    }
+
+    class InOrderIterator {
+    public:
+        InOrderIterator(Node<T>* root) {
+            push_left(root);
+        }
+
+        bool operator!=(const InOrderIterator& other) const {
+            return !stack.empty();
+        }
+
+        InOrderIterator& operator++() {
+            Node<T>* node = stack.top();
+            stack.pop();
+            if (node->children.size() > 1) {
+                push_left(node->children[1]);
+            }
+            return *this;
+        }
+
+        Node<T>& operator*() const {
+            return *stack.top();
+        }
+
+        Node<T>* operator->() const {
+            return stack.top();
+        }
+
+    private:
+        std::stack<Node<T>*> stack;
+
+        void push_left(Node<T>* node) {
+            while (node) {
+                stack.push(node);
+                if (!node->children.empty()) {
+                    node = node->children[0];
+                } else {
+                    node = nullptr;
+                }
+            }
+        }
+    };
+
+    InOrderIterator begin_in_order() const {
+        return InOrderIterator(root);
+    }
+
+    InOrderIterator end_in_order() const {
+        return InOrderIterator(nullptr);
     }
 
     class PostOrderIterator {
@@ -122,23 +213,21 @@ public:
         return PostOrderIterator(nullptr);
     }
 
-    class InOrderIterator {
+    class PreOrderIterator {
     public:
-        InOrderIterator(Node<T>* root) {
-            push_left(root);
+        PreOrderIterator(Node<T>* root) {
+            if (root) stack.push(root);
         }
 
-        bool operator!=(const InOrderIterator& other) const {
+        bool operator!=(const PreOrderIterator& other) const {
             return !stack.empty();
         }
 
-        InOrderIterator& operator++() {
-            Node<T>* node = stack.top();
+        PreOrderIterator& operator++() {
+            auto node = stack.top();
             stack.pop();
-            if (!node->children.empty()) {
-                for (size_t i = 1; i < node->children.size(); ++i) {
-                    push_left(node->children[i]);
-                }
+            for (auto it = node->children.rbegin(); it != node->children.rend(); ++it) {
+                stack.push(*it);
             }
             return *this;
         }
@@ -153,71 +242,73 @@ public:
 
     private:
         std::stack<Node<T>*> stack;
-        void push_left(Node<T>* node) {
-            while (node) {
-                stack.push(node);
-                if (!node->children.empty()) {
-                    node = node->children[0];
-                } else {
-                    node = nullptr;
-                }
-            }
-        }
     };
 
-    InOrderIterator begin_in_order() const {
-        return InOrderIterator(root);
+    PreOrderIterator begin_pre_order() const {
+        return PreOrderIterator(root);
     }
 
-    InOrderIterator end_in_order() const {
-        return InOrderIterator(nullptr);
+    PreOrderIterator end_pre_order() const {
+        return PreOrderIterator(nullptr);
     }
 
-    class BFSIterator {
+    class MinHeapIterator {
     public:
-        BFSIterator(Node<T>* root) {
-            if (root) queue.push(root);
-        }
-
-        bool operator!=(const BFSIterator& other) const {
-            return !queue.empty();
-        }
-
-        BFSIterator& operator++() {
-            auto node = queue.front();
-            queue.pop();
-            for (auto& child : node->children) {
-                queue.push(child);
+        MinHeapIterator(Node<T>* root) {
+            if (root) {
+                populate_heap(root);
+                std::make_heap(heap.begin(), heap.end(), compare_nodes);
             }
+        }
+
+        bool operator!=(const MinHeapIterator& other) const {
+            return !heap.empty();
+        }
+
+        MinHeapIterator& operator++() {
+            std::pop_heap(heap.begin(), heap.end(), compare_nodes);
+            heap.pop_back();
             return *this;
         }
 
         Node<T>& operator*() const {
-            return *queue.front();
+            return *heap.front();
         }
 
         Node<T>* operator->() const {
-            return queue.front();
+            return heap.front();
         }
 
     private:
-        std::queue<Node<T>*> queue;
+        std::vector<Node<T>*> heap;
+
+        void populate_heap(Node<T>* node) {
+            if (!node) return;
+            heap.push_back(node);
+            for (auto& child : node->children) {
+                populate_heap(child);
+            }
+        }
+
+        static bool compare_nodes(Node<T>* a, Node<T>* b) {
+            return a->get_key() > b->get_key();
+        }
     };
 
-    BFSIterator begin_bfs_scan() const {
-        return BFSIterator(root);
+    MinHeapIterator begin_min_heap() const {
+        return MinHeapIterator(root);
     }
 
-    BFSIterator end_bfs_scan() const {
-        return BFSIterator(nullptr);
+    MinHeapIterator end_min_heap() const {
+        return MinHeapIterator(nullptr);
     }
 
     BFSIterator begin() const {
-        return begin_bfs_scan();
+        return begin_bfs();
     }
 
     BFSIterator end() const {
-        return end_bfs_scan();
+        return end_bfs();
     }
 
     friend std::ostream& operator<<(std::ostream& os, const Tree<T, k>& tree) {

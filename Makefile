@@ -1,38 +1,38 @@
-# Define the compiler to use
+# Compiler
 CXX = g++
 
-# Define the flags to pass to the compiler
-CXXFLAGS = -std=c++11 -Wall -Wextra
+# Compiler flags
+CXXFLAGS = -std=c++11 -Wall -Wextra -pedantic
 
-# Define the libraries to link
+# Include directories
+INCLUDES = -I/usr/include/SFML -I.
+
+# Linker flags
 LDFLAGS = -lsfml-graphics -lsfml-window -lsfml-system
 
-# Define the target executable
-TARGET = tree_example
+# Source files
+SOURCES = Demo.cpp
 
-# Define the source files
-SRCS = Demo.cpp node.cpp tree.cpp
+# Object files
+OBJECTS = $(SOURCES:.cpp=.o)
 
-# Define the header files
-HDRS = node.hpp tree.hpp complex.hpp
+# Executable
+EXECUTABLE = binary_tree
 
-# Define the object files
-OBJS = $(SRCS:.cpp=.o)
+# Default rule
+all: $(EXECUTABLE)
 
-# Default target to build the executable
-all: $(TARGET)
+# Rule to link the executable
+$(EXECUTABLE): $(OBJECTS)
+	$(CXX) $(OBJECTS) -o $@ $(LDFLAGS)
 
-# Rule to build the target executable
-$(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
+# Rule to compile source files into object files
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
 
-# Rule to build object files
-%.o: %.cpp $(HDRS)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-# Clean up the generated files
+# Clean rule
 clean:
-	rm -f $(TARGET) $(OBJS)
+	rm -f $(OBJECTS) $(EXECUTABLE)
 
-# Declare the 'clean' target as a phony target
+# Phony targets
 .PHONY: all clean

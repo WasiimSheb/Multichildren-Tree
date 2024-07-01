@@ -10,6 +10,10 @@ public:
     double get_real() const { return real; }
     double get_imag() const { return imag; }
 
+    bool operator==(const Complex& other) const {
+        return real == other.real && imag == other.imag;
+    }
+
     bool operator<(const Complex& other) const {
         return real < other.real || (real == other.real && imag < other.imag);
     }
@@ -28,4 +32,4 @@ private:
     double imag;
 };
 
-#endif
+#endif // COMPLEX_HPP

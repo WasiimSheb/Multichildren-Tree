@@ -2,18 +2,24 @@
 #define NODE_HPP
 
 #include <vector>
-#include <iostream>
+#include <memory>
+#include <sstream>
 
 template <typename T>
 class Node {
 public:
-    Node(T value) : value(value) {}
+    T key;
+    std::vector<std::shared_ptr<Node<T>>> children;
 
-    T get_value() const { return value; }
-    std::vector<Node*> children;
+    Node(T key) : key(key) {}
+    T get_key() const { return key; }
+    void add_child(std::shared_ptr<Node<T>> child) { children.push_back(child); }
 
-private:
-    T value;
+    std::string toString() const {
+        std::stringstream ss;
+        ss << key;
+        return ss.str();
+    }
 };
 
-#endif
+#endif // NODE_HPP

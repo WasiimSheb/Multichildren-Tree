@@ -27,4 +27,5 @@ This project implements a generic k-ary tree data structure in C++. It includes 
 - `Makefile`: Defines the build and test process.
 
 ![Screenshot from 2024-07-01 19-36-27](https://github.com/WasiimSheb/systemsoftware2Exe4/assets/123734906/74a9f37f-beff-4d16-95a5-1e791e3085ee)
+![344750771-74a9f37f-beff-4d16-95a5-1e791e3085ee](https://github.com/WasiimSheb/systemsoftware2Exe4/assets/123734906/64327b24-f0f1-418b-b1d5-57977bc697b3)
 

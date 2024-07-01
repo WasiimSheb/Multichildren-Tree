@@ -19,7 +19,7 @@ OBJECTS = $(SOURCES:.cpp=.o)
 TEST_OBJECTS = $(TEST_SOURCES:.cpp=.o)
 
 # Executable
-EXECUTABLE = complex_tree
+EXECUTABLE = tree
 TEST_EXECUTABLE = test_tree
 
 # Default rule

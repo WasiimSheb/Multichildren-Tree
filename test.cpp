@@ -1,10 +1,25 @@
-//wasimshebalny@gmail.com
+/**
+ * @file test_tree.cpp
+ * @brief Test cases for the Tree and Node classes using the doctest framework.
+ * @date 2024-06-30
+ * @version 1.0
+ * @details
+ * This file contains test cases for various functionalities of the Tree and Node classes. 
+ * It tests operations such as adding children, different traversal methods, and heap operations 
+ * for different data types including int, Complex, string, and double.
+ * 
+ * Contact: wasimshebalny@gmail.com
+ */
+
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
 #include "tree.hpp"
 #include "node.hpp"
 #include "complex.hpp"
 
+/**
+ * @brief Test case for adding children to nodes.
+ */
 TEST_CASE("children check") {
     Node<int> root(10);
     Tree<int> tree;
@@ -29,12 +44,14 @@ TEST_CASE("children check") {
         tree.add_sub_node(root, child1);
         tree.add_sub_node(root, child2);
 
-        //CHECK_THROWS_MESSAGE(tree.add_sub_node(root, child3), "error adding a sub node");
         CHECK_NOTHROW(tree.add_sub_node(child1, child3));
         CHECK_NOTHROW(tree.add_sub_node(child1, child4));
     }
 }
 
+/**
+ * @brief Test case for different tree traversal methods.
+ */
 TEST_CASE("traversals") {
     Node<int> root(10);
     Tree<int> tree;
@@ -106,6 +123,9 @@ TEST_CASE("traversals") {
     }
 }
 
+/**
+ * @brief Test case for heap operations.
+ */
 TEST_CASE("heap operations") {
     Node<int> root(10);
     Tree<int> tree;
@@ -133,6 +153,9 @@ TEST_CASE("heap operations") {
     }
 }
 
+/**
+ * @brief Test case for tree operations with Complex type.
+ */
 TEST_CASE("Complex type operations") {
     Node<Complex> root(Complex(1.1, 2.2));
     Tree<Complex> tree;
@@ -176,6 +199,110 @@ TEST_CASE("Complex type operations") {
 
         for (auto it = tree.begin_min_heap(); it != tree.end_min_heap(); ++it) {
             result.push_back(it->toString());
+        }
+
+        CHECK(result == expected);
+    }
+}
+
+/**
+ * @brief Test case for tree operations with string type.
+ */
+TEST_CASE("String type operations") {
+    Node<std::string> root("root");
+    Tree<std::string> tree;
+    tree.add_root(root);
+
+    Node<std::string> child1("child1");
+    Node<std::string> child2("child2");
+    Node<std::string> child3("child3");
+    Node<std::string> child4("child4");
+
+    tree.add_sub_node(root, child1);
+    tree.add_sub_node(root, child2);
+    tree.add_sub_node(child1, child3);
+    tree.add_sub_node(child1, child4);
+
+    SUBCASE("BFS traversal with String") {
+        std::vector<std::string> expected = {"root", "child1", "child2", "child3", "child4"};
+        std::vector<std::string> result;
+
+        for (auto it = tree.begin_bfs(); it != tree.end_bfs(); ++it) {
+            result.push_back(it->get_key());
+        }
+
+        CHECK(result == expected);
+    }
+
+    SUBCASE("DFS traversal with String") {
+        std::vector<std::string> expected = {"root", "child1", "child3", "child4", "child2"};
+        std::vector<std::string> result;
+
+        for (auto it = tree.begin_dfs(); it != tree.end_dfs(); ++it) {
+            result.push_back(it->get_key());
+        }
+
+        CHECK(result == expected);
+    }
+
+    SUBCASE("Min-Heap traversal with String") {
+        std::vector<std::string> expected = {"child1", "child2", "child3", "child4", "root"};
+        std::vector<std::string> result;
+
+        for (auto it = tree.begin_min_heap(); it != tree.end_min_heap(); ++it) {
+            result.push_back(it->get_key());
+        }
+
+        CHECK(result == expected);
+    }
+}
+
+/**
+ * @brief Test case for tree operations with double type.
+ */
+TEST_CASE("Double type operations") {
+    Node<double> root(10.5);
+    Tree<double> tree;
+    tree.add_root(root);
+
+    Node<double> child1(20.2);
+    Node<double> child2(15.3);
+    Node<double> child3(25.7);
+    Node<double> child4(30.8);
+
+    tree.add_sub_node(root, child1);
+    tree.add_sub_node(root, child2);
+    tree.add_sub_node(child1, child3);
+    tree.add_sub_node(child1, child4);
+
+    SUBCASE("BFS traversal with Double") {
+        std::vector<double> expected = {10.5, 20.2, 15.3, 25.7, 30.8};
+        std::vector<double> result;
+
+        for (auto it = tree.begin_bfs(); it != tree.end_bfs(); ++it) {
+            result.push_back(it->get_key());
+        }
+
+        CHECK(result == expected);
+    }
+
+    SUBCASE("DFS traversal with Double") {
+        std::vector<double> expected = {10.5, 20.2, 25.7, 30.8, 15.3};
+        std::vector<double> result;
+
+        for (auto it = tree.begin_dfs(); it != tree.end_dfs(); ++it) {
+            result.push_back(it->get_key());
+        }
+
+        CHECK(result == expected);
+    }
+
+    SUBCASE("Min-Heap traversal with Double") {
+        std::vector<double> expected = {10.5, 15.3, 20.2, 25.7, 30.8};
+        std::vector<double> result;
+
+        for (auto it = tree.begin_min_heap(); it != tree.end_min_heap(); ++it) {
+            result.push_back(it->get_key());
         }
 
         CHECK(result == expected);

@@ -1,4 +1,3 @@
-//wasimshebalny@gmail.com
 # Compiler
 CXX = g++
 

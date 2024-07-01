@@ -2,253 +2,240 @@
 #define TREE_HPP
 
 #include "node.hpp"
-#include <vector>
 #include <queue>
 #include <stack>
-#include <stdexcept>
-#include <algorithm>
-#include <memory>
 #include <iostream>
 
-using namespace std;
-
-template <typename T, int K = 2>
+template <typename T, int k = 2>
 class Tree {
 private:
-    std::shared_ptr<Node<T>> root;
-    int k;
-    bool is_binary_tree;
-
-    std::vector<std::shared_ptr<Node<T>>> pre_order_nodes;
-    std::vector<std::shared_ptr<Node<T>>> post_order_nodes;
-    std::vector<std::shared_ptr<Node<T>>> in_order_nodes;
-    std::vector<std::shared_ptr<Node<T>>> bfs_nodes;
-    std::vector<std::shared_ptr<Node<T>>> dfs_nodes;
-    std::vector<std::shared_ptr<Node<T>>> heap_nodes;
-
-    void pre_order_traversal(std::shared_ptr<Node<T>> node) {
-        if (!node) return;
-        pre_order_nodes.push_back(node);
-        for (auto child : node->children) {
-            pre_order_traversal(child);
-        }
-    }
-
-    void post_order_traversal(std::shared_ptr<Node<T>> node) {
-        if (!node) return;
-        for (auto child : node->children) {
-            post_order_traversal(child);
-        }
-        post_order_nodes.push_back(node);
-    }
-
-    void in_order_traversal(std::shared_ptr<Node<T>> node) {
-        if (!node || K != 2) return;
-        if (!node->children.empty()) {
-            in_order_traversal(node->children[0]);
-        }
-        in_order_nodes.push_back(node);
-        if (node->children.size() > 1) {
-            in_order_traversal(node->children[1]);
-        }
-    }
-
-    void bfs_traversal(std::shared_ptr<Node<T>> node) {
-        if (!node) return;
-        std::queue<std::shared_ptr<Node<T>>> q;
-        q.push(node);
-        while (!q.empty()) {
-            std::shared_ptr<Node<T>> current = q.front();
-            q.pop();
-            bfs_nodes.push_back(current);
-            for (auto child : current->children) {
-                q.push(child);
-            }
-        }
-    }
-
-    void dfs_traversal(std::shared_ptr<Node<T>> node) {
-        if (!node) return;
-        std::stack<std::shared_ptr<Node<T>>> s;
-        s.push(node);
-        while (!s.empty()) {
-            std::shared_ptr<Node<T>> current = s.top();
-            s.pop();
-            dfs_nodes.push_back(current);
-            for (auto it = current->children.rbegin(); it != current->children.rend(); ++it) {
-                s.push(*it);
-            }
-        }
-    }
-
-    void myHeap() {
-        if (K != 2) {
-            throw std::runtime_error("Heap transformation is only supported for binary trees.");
-        }
-
-        heap_nodes.clear();
-        std::queue<std::shared_ptr<Node<T>>> q;
-        if (root) q.push(root);
-
-        while (!q.empty()) {
-            std::shared_ptr<Node<T>> current = q.front();
-            q.pop();
-            heap_nodes.push_back(current);
-            for (auto child : current->children) {
-                q.push(child);
-            }
-        }
-
-        auto compare = [](std::shared_ptr<Node<T>> a, std::shared_ptr<Node<T>> b) { return a->key > b->key; };
-        std::make_heap(heap_nodes.begin(), heap_nodes.end(), compare);
-
-        for (size_t i = 0; i < heap_nodes.size(); ++i) {
-            heap_nodes[i]->children.clear();
-            size_t left_index = 2 * i + 1;
-            size_t right_index = 2 * i + 2;
-            if (left_index < heap_nodes.size()) {
-                heap_nodes[i]->children.push_back(heap_nodes[left_index]);
-            }
-            if (right_index < heap_nodes.size()) {
-                heap_nodes[i]->children.push_back(heap_nodes[right_index]);
-            }
-        }
-    }
+    Node<T>* root;
 
 public:
-    Tree() : root(nullptr), k(K), is_binary_tree(K == 2) {}
+    Tree() : root(nullptr) {}
 
-    int get_k() const { return k; }
-    void add_root(const Node<T>& node) {
-        if (root == nullptr) {
-            root = std::make_shared<Node<T>>(node.get_key());
-            std::cout << "Added root node: " << node.get_key() << std::endl;
-        } else {
-            throw std::runtime_error("Root node already exists. Updating the root's key.");
+    void add_root(Node<T>& root_node) {
+        root = &root_node;
+    }
+
+    void add_sub_node(Node<T>& parent_node, Node<T>& sub_node) {
+        Node<T>* parent = find_node(root, parent_node);
+        if (parent && parent->children.size() < k) {
+            parent->add_child(&sub_node);
         }
     }
 
-    void add_sub_node(const Node<T>& parent, const Node<T>& child) {
-        if (root == nullptr) {
-            throw std::runtime_error("Root node not found. Please add a root node before adding sub-nodes.");
+    Node<T>* find_node(Node<T>* current, Node<T>& target) {
+        if (!current) return nullptr;
+        if (current->get_key() == target.get_key()) return current;
+
+        for (auto& child : current->children) {
+            auto found = find_node(child, target);
+            if (found) return found;
         }
 
-        queue<shared_ptr<Node<T>>> q;
-        q.push(root);
-        shared_ptr<Node<T>> parent_ptr = nullptr;
-
-        while (!q.empty()) {
-            shared_ptr<Node<T>> node = q.front();
-            q.pop();
-
-            if (node->get_key() == parent.get_key()) {
-                parent_ptr = node;
-                break;
-            }
-
-            for (auto& child_node : node->children) {
-                q.push(child_node);
-            }
-        }
-
-        if (parent_ptr == nullptr) {
-            throw runtime_error("Parent node not found. Cannot add the child node.");
-        }
-
-        if (parent_ptr->children.size() >= static_cast<size_t>(k)) {
-            throw runtime_error("Parent node has reached the maximum number of children.");
-        }
-
-        parent_ptr->add_child(make_shared<Node<T>>(child));
-        cout << "Added child node: " << child.get_key() << " to parent node: " << parent.get_key() << endl;
+        return nullptr;
     }
 
-    class iterator {
-    private:
-        typename std::vector<std::shared_ptr<Node<T>>>::iterator it;
-
+    class PreOrderIterator {
     public:
-        iterator(typename std::vector<std::shared_ptr<Node<T>>>::iterator iter) : it(iter) {}
+        PreOrderIterator(Node<T>* root) {
+            if (root) stack.push(root);
+        }
 
-        iterator& operator++() {
-            ++it;
+        bool operator!=(const PreOrderIterator& other) const {
+            return !stack.empty();
+        }
+
+        PreOrderIterator& operator++() {
+            auto node = stack.top();
+            stack.pop();
+            for (auto it = node->children.rbegin(); it != node->children.rend(); ++it) {
+                stack.push(*it);
+            }
             return *this;
         }
 
-        bool operator!=(const iterator& other) const {
-            return it != other.it;
-        }
-
         Node<T>& operator*() const {
-            return **it;
+            return *stack.top();
         }
 
         Node<T>* operator->() const {
-            return it->get();
+            return stack.top();
+        }
+
+    private:
+        std::stack<Node<T>*> stack;
+    };
+
+    PreOrderIterator begin_pre_order() const {
+        return PreOrderIterator(root);
+    }
+
+    PreOrderIterator end_pre_order() const {
+        return PreOrderIterator(nullptr);
+    }
+
+    class PostOrderIterator {
+    public:
+        PostOrderIterator(Node<T>* root) {
+            if (root) {
+                stack.push(root);
+                while (!stack.empty()) {
+                    Node<T>* node = stack.top();
+                    stack.pop();
+                    output.push(node);
+                    for (auto& child : node->children) {
+                        stack.push(child);
+                    }
+                }
+            }
+        }
+
+        bool operator!=(const PostOrderIterator& other) const {
+            return !output.empty();
+        }
+
+        PostOrderIterator& operator++() {
+            output.pop();
+            return *this;
+        }
+
+        Node<T>& operator*() const {
+            return *output.top();
+        }
+
+        Node<T>* operator->() const {
+            return output.top();
+        }
+
+    private:
+        std::stack<Node<T>*> stack;
+        std::stack<Node<T>*> output;
+    };
+
+    PostOrderIterator begin_post_order() const {
+        return PostOrderIterator(root);
+    }
+
+    PostOrderIterator end_post_order() const {
+        return PostOrderIterator(nullptr);
+    }
+
+    class InOrderIterator {
+    public:
+        InOrderIterator(Node<T>* root) {
+            push_left(root);
+        }
+
+        bool operator!=(const InOrderIterator& other) const {
+            return !stack.empty();
+        }
+
+        InOrderIterator& operator++() {
+            Node<T>* node = stack.top();
+            stack.pop();
+            if (!node->children.empty()) {
+                for (size_t i = 1; i < node->children.size(); ++i) {
+                    push_left(node->children[i]);
+                }
+            }
+            return *this;
+        }
+
+        Node<T>& operator*() const {
+            return *stack.top();
+        }
+
+        Node<T>* operator->() const {
+            return stack.top();
+        }
+
+    private:
+        std::stack<Node<T>*> stack;
+        void push_left(Node<T>* node) {
+            while (node) {
+                stack.push(node);
+                if (!node->children.empty()) {
+                    node = node->children[0];
+                } else {
+                    node = nullptr;
+                }
+            }
         }
     };
 
-    iterator begin_pre_order() {
-        pre_order_nodes.clear();
-        pre_order_traversal(root);
-        return iterator(pre_order_nodes.begin());
+    InOrderIterator begin_in_order() const {
+        return InOrderIterator(root);
     }
 
-    iterator end_pre_order() {
-        return iterator(pre_order_nodes.end());
+    InOrderIterator end_in_order() const {
+        return InOrderIterator(nullptr);
     }
 
-    iterator begin_post_order() {
-        post_order_nodes.clear();
-        post_order_traversal(root);
-        return iterator(post_order_nodes.begin());
+    class BFSIterator {
+    public:
+        BFSIterator(Node<T>* root) {
+            if (root) queue.push(root);
+        }
+
+        bool operator!=(const BFSIterator& other) const {
+            return !queue.empty();
+        }
+
+        BFSIterator& operator++() {
+            auto node = queue.front();
+            queue.pop();
+            for (auto& child : node->children) {
+                queue.push(child);
+            }
+            return *this;
+        }
+
+        Node<T>& operator*() const {
+            return *queue.front();
+        }
+
+        Node<T>* operator->() const {
+            return queue.front();
+        }
+
+    private:
+        std::queue<Node<T>*> queue;
+    };
+
+    BFSIterator begin_bfs_scan() const {
+        return BFSIterator(root);
     }
 
-    iterator end_post_order() {
-        return iterator(post_order_nodes.end());
+    BFSIterator end_bfs_scan() const {
+        return BFSIterator(nullptr);
     }
 
-    iterator begin_in_order() {
-        in_order_nodes.clear();
-        in_order_traversal(root);
-        return iterator(in_order_nodes.begin());
+    BFSIterator begin() const {
+        return begin_bfs_scan();
     }
 
-    iterator end_in_order() {
-        return iterator(in_order_nodes.end());
+    BFSIterator end() const {
+        return end_bfs_scan();
     }
 
-    iterator begin_bfs_scan() {
-        bfs_nodes.clear();
-        bfs_traversal(root);
-        return iterator(bfs_nodes.begin());
+    friend std::ostream& operator<<(std::ostream& os, const Tree<T, k>& tree) {
+        if (tree.root) {
+            tree.print_node(os, tree.root, 0);
+        }
+        return os;
     }
 
-    iterator end_bfs_scan() {
-        return iterator(bfs_nodes.end());
-    }
-
-    iterator begin_dfs_scan() {
-        dfs_nodes.clear();
-        dfs_traversal(root);
-        return iterator(dfs_nodes.begin());
-    }
-
-    iterator end_dfs_scan() {
-        return iterator(dfs_nodes.end());
-    }
-
-    iterator begin_heap() {
-        myHeap();
-        return iterator(heap_nodes.begin());
-    }
-
-    iterator end_heap() {
-        return iterator(heap_nodes.end());
-    }
-
-    std::shared_ptr<Node<T>> get_root() const {
-        return root;
+private:
+    void print_node(std::ostream& os, Node<T>* node, int depth) const {
+        for (int i = 0; i < depth; ++i) {
+            os << "  ";
+        }
+        os << node->get_key() << "\n";
+        for (auto& child : node->children) {
+            print_node(os, child, depth + 1);
+        }
     }
 };
 

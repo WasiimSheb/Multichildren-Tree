@@ -2,6 +2,7 @@
 #define COMPLEX_HPP
 
 #include <iostream>
+#include <sstream>
 
 class Complex {
 public:
@@ -25,6 +26,12 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const Complex& c) {
         os << c.real << "+" << c.imag << "i";
         return os;
+    }
+
+    std::string toString() const {
+        std::ostringstream oss;
+        oss << real << "+" << imag << "i";
+        return oss.str();
     }
 
 private:

@@ -17,7 +17,7 @@ SOURCES = Demo.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
 
 # Executable
-EXECUTABLE = binary_tree
+EXECUTABLE = complex_tree
 
 # Default rule
 all: $(EXECUTABLE)

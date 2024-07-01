@@ -1,3 +1,4 @@
+//wasimshebalny@gmail.com
 #ifndef TREE_HPP
 #define TREE_HPP
 
@@ -36,7 +37,7 @@ public:
             if (found) return found;
         }
 
-        return nullptr;
+       return nullptr;
     }
 
     class BFSIterator {
@@ -84,9 +85,9 @@ public:
             if (root) stack.push(root);
         }
 
-        bool operator!=(const DFSIterator& other) const {
-            return !stack.empty();
-        }
+         bool operator!=(const DFSIterator& other) const {
+             return !stack.empty();
+         }
 
         DFSIterator& operator++() {
             auto node = stack.top();

@@ -6286,7 +6286,7 @@ namespace {
               << p.numAssertsFailed << " failed" << Color::None << " |\n";
             s << Color::Cyan << "[doctest] " << Color::None
               << "Status: " << (p.numTestCasesFailed > 0 ? Color::Red : Color::Green)
-              << ((p.numTestCasesFailed > 0) ? "FAILURE!" : "SUCCESS!") << Color::None << std::endl;
+              << ((p.numTestCasesFailed > 0) ? "YOU NEED TO FIX YOUR CODE!" : "YOU ARE A CHAMP!") << Color::None << std::endl;
         }
 
         void test_case_start(const TestCaseData& in) override {

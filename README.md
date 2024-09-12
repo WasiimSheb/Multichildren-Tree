@@ -1,4 +1,4 @@
-# Tree Data Structure Implementation
+# K-ary Tree Data Structure Implementation
 
 ## Overview
 
